@@ -11,11 +11,11 @@ const RESOURCES = [
 ]
 
 const AVAILABLE_SLOTS = [
-  { start: '2026-06-28 09:00', end: '2026-06-28 09:30', resource_id: '10' },
-  { start: '2026-06-28 11:00', end: '2026-06-28 11:30', resource_id: '10' },
-  { start: '2026-06-28 14:00', end: '2026-06-28 14:30', resource_id: '11' },
-  { start: '2026-06-29 10:00', end: '2026-06-29 10:30', resource_id: '10' },
-  { start: '2026-06-29 15:00', end: '2026-06-29 15:30', resource_id: '11' },
+  { start: '2026-07-13 09:00', end: '2026-07-13 09:30', resource_id: '10' },
+  { start: '2026-07-13 11:00', end: '2026-07-13 11:30', resource_id: '10' },
+  { start: '2026-07-13 14:00', end: '2026-07-13 14:30', resource_id: '11' },
+  { start: '2026-07-14 10:00', end: '2026-07-14 10:30', resource_id: '10' },
+  { start: '2026-07-14 15:00', end: '2026-07-14 15:30', resource_id: '11' },
 ]
 
 const CONTACTS = [
