@@ -8,6 +8,14 @@ const { APPOINTMENT_TYPES, RESOURCES, AVAILABLE_SLOTS, CONTACTS, ANIMALS } = req
  * that should ever know about ezyVet's actual data structure.
  */
 class EzyVetAdapter extends PMSAdapter {
+  // config: { pmsCredentials, clinicName, ... } from tenants.pms_credentials.
+  // Stored but unused while this adapter still serves mock data — becomes
+  // the OAuth client id/secret once real ezyVet calls replace the mocks.
+  constructor(config = {}) {
+    super()
+    this.config = config
+  }
+
   async checkAvailability(date) {
     const toSlot = (s) => {
       const resource = RESOURCES.find(r => r.id === s.resource_id)
