@@ -60,8 +60,13 @@ class EzyVetAdapter extends PMSAdapter {
   }
 
   async lookupContact(phone) {
-    const cleanPhone = (phone || '').replace(/\D/g, '')
-    const contact = CONTACTS.find(c => c.phone === cleanPhone)
+    // Compare last-10-digits on BOTH sides: the LLM formats what it heard
+    // unpredictably ("1703555-1234", "+17035551234", "7035551234"), so any
+    // exact-format match will randomly fail. The national 10-digit core is
+    // the only stable identity.
+    const normalize = (raw) => (raw || '').replace(/\D/g, '').slice(-10)
+    const cleanPhone = normalize(phone)
+    const contact = CONTACTS.find(c => normalize(c.phone) === cleanPhone)
     if (!contact) return null
 
     const subjects = ANIMALS

@@ -4,6 +4,11 @@ const app = express()
 
 app.use(express.json())
 
+app.use((req, res, next) => {
+  console.log(`>>> ${req.method} ${req.path}`, JSON.stringify(req.body))
+  next()
+})
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
