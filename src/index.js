@@ -1,8 +1,10 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
+const jotformWebhook = require('./routes/webhooks/jotformWebhook');
 
-app.use(express.json())
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   console.log(`>>> ${req.method} ${req.path}`, JSON.stringify(req.body))
@@ -12,6 +14,9 @@ app.use((req, res, next) => {
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
+
+// Jotform webhook - handles form submissions
+app.use('/webhook', jotformWebhook)
 
 // Vapi server webhook - handles call events
 app.post('/webhook', (req, res) => {
