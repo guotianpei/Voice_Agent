@@ -60,11 +60,22 @@ class EzyVetAdapter extends PMSAdapter {
   }
 
   async lookupContact(phone) {
-    // Compare last-10-digits on BOTH sides: the LLM formats what it heard
-    // unpredictably ("1703555-1234", "+17035551234", "7035551234"), so any
-    // exact-format match will randomly fail. The national 10-digit core is
-    // the only stable identity.
-    const normalize = (raw) => (raw || '').replace(/\D/g, '').slice(-10)
+// Compare last-10-digits on BOTH sides. The LLM formats what it heard
+    // unpredictably — including spelled-out words ("one seven zero three...")
+    // when the transcriber delivers digits as words. Convert words first,
+    // then strip, then take the national 10-digit core.
+    const WORD_DIGITS = {
+      zero: '0', oh: '0', o: '0', one: '1', two: '2', three: '3', four: '4',
+      five: '5', six: '6', seven: '7', eight: '8', nine: '9',
+    }
+    const normalize = (raw) =>
+      (raw || '')
+        .toLowerCase()
+        .split(/[\s-]+/)
+        .map((w) => (WORD_DIGITS[w] !== undefined ? WORD_DIGITS[w] : w))
+        .join('')
+        .replace(/\D/g, '')
+        .slice(-10)
     const cleanPhone = normalize(phone)
     const contact = CONTACTS.find(c => normalize(c.phone) === cleanPhone)
     if (!contact) return null
