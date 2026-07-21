@@ -77,6 +77,7 @@ function mapOnboardingToClinicInfo(config) {
   const bp = config.business_profile || {};
   return {
     displayName: bp.name || null,
+    greeting: bp.greeting || null,
     phone: formatPhone(bp.phone),
     address: bp.address ? { formatted: bp.address } : null,
     timezone: bp.timezone || 'America/New_York',

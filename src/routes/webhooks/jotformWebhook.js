@@ -3,6 +3,8 @@
  * Maps Jotform's internal field names (q3_q3_textbox1, etc.) to tenant config.
  */
 
+
+
 const express = require('express');
 const crypto = require('crypto');
 const multer = require('multer');
@@ -70,6 +72,7 @@ function transformJotformToConfig(data) {
   const businessProfile = {
     name: flat(byPrefix(data, 'q3_')),
     type: rawType.toLowerCase().includes('groom') ? 'pet_grooming' : 'veterinary_clinic',
+    greeting: flat(byPrefix(data, 'q45_')) || null,
     phone: flat(byPrefix(data, 'q8_')).replace(/[^\d+]/g, ''),
     address: flat(byPrefix(data, 'q9_')),
     timezone: 'America/New_York',
@@ -202,6 +205,7 @@ hourRows.forEach((row) => {
 /* ---------- route ---------- */
 
 router.post('/jotform', upload.none(), async (req, res) => {
+
   try {
     let formData = req.body || {};
 
