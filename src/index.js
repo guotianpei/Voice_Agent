@@ -4,6 +4,7 @@ const app = express()
 const jotformWebhook = require('./routes/webhooks/jotformWebhook');
 
 app.use(express.json());
+app.use('/getClinicInfo', require('./routes/clinicInfo'));
 app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
