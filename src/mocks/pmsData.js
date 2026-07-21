@@ -27,4 +27,36 @@ const ANIMALS = [
   { id: '202', name: 'Max',   species: 'Feline', contact_id: '101' },
 ]
 
-module.exports = { APPOINTMENT_TYPES, RESOURCES, AVAILABLE_SLOTS, CONTACTS, ANIMALS }
+const APPOINTMENTS = [
+  {
+    id: 'appt-001',
+    contact_id: '101',
+    animal_id: '201',
+    appointment_type_id: '1',
+    resource_id: '10',
+    start: '2026-07-28 09:00',
+    end: '2026-07-28 09:30',
+    status: 'confirmed',
+  },
+  {
+    id: 'appt-002',
+    contact_id: '101',
+    animal_id: '202',
+    appointment_type_id: '3',
+    resource_id: '11',
+    start: '2026-08-04 14:00',
+    end: '2026-08-04 14:15',
+    status: 'confirmed',
+  },
+  {
+    id: 'appt-003',
+    contact_id: '101',
+    animal_id: '201',
+    appointment_type_id: '2',
+    resource_id: '10',
+    start: '2026-08-11 11:00',
+    end: '2026-08-11 11:30',
+    status: 'confirmed',
+  },
+]
+module.exports = { APPOINTMENT_TYPES, RESOURCES, AVAILABLE_SLOTS, CONTACTS, ANIMALS, APPOINTMENTS }

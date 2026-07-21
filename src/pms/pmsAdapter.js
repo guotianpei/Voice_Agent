@@ -32,6 +32,18 @@ class PMSAdapter {
   async getAppointmentTypes() {
     throw new Error('getAppointmentTypes not implemented')
   }
+
+
+  // async getAppointments(contactId: string) -> Appointment[]
+  //   Appointment: { id, animalName, animalSpecies, serviceName, resourceName, start, status }
+  async getAppointments(contactId) {
+    throw new Error('getAppointments not implemented')
+  }
+
+  // async cancelAppointment(appointmentId: string) -> { success, appointmentId }
+  async cancelAppointment(appointmentId) {
+    throw new Error('cancelAppointment not implemented')
+  }
 }
 
 module.exports = PMSAdapter

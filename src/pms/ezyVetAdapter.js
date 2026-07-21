@@ -1,5 +1,6 @@
 const PMSAdapter = require('./pmsAdapter')
-const { APPOINTMENT_TYPES, RESOURCES, AVAILABLE_SLOTS, CONTACTS, ANIMALS } = require('../mocks/pmsData')
+
+const { APPOINTMENT_TYPES, RESOURCES, AVAILABLE_SLOTS, CONTACTS, ANIMALS, APPOINTMENTS } = require('../mocks/pmsData')
 
 /**
  * EzyVetAdapter — talks to ezyVet (currently: the mock data standing in for it, later:
@@ -98,6 +99,38 @@ class EzyVetAdapter extends PMSAdapter {
       name: t.name,
       durationMinutes: t.duration,
     }))
+  }
+
+  async getAppointments(contactId) {
+    const now = new Date().toISOString().slice(0, 16).replace('T', ' ')
+    const upcoming = APPOINTMENTS.filter(
+      a => a.contact_id === contactId &&
+           a.status !== 'cancelled' &&
+           a.start >= now
+    )
+    return upcoming.map(a => {
+      const animal   = ANIMALS.find(an => an.id === a.animal_id)
+      const type     = APPOINTMENT_TYPES.find(t => t.id === a.appointment_type_id)
+      const resource = RESOURCES.find(r => r.id === a.resource_id)
+      return {
+        id:            a.id,
+        animalName:    animal   ? animal.name    : 'Unknown',
+        animalSpecies: animal   ? animal.species : 'Unknown',
+        serviceName:   type     ? type.name      : 'Visit',
+        resourceName:  resource ? resource.name  : 'Unknown',
+        start:         a.start,
+        end:           a.end,
+        status:        a.status,
+      }
+    })
+  }
+
+  async cancelAppointment(appointmentId) {
+    const appt = APPOINTMENTS.find(a => a.id === appointmentId)
+    if (!appt) throw new Error(`Appointment ${appointmentId} not found`)
+    if (appt.status === 'cancelled') throw new Error(`Appointment ${appointmentId} is already cancelled`)
+    appt.status = 'cancelled'
+    return { success: true, appointmentId }
   }
 }
 
