@@ -11,6 +11,7 @@ const pool = require('../db/pool')
 async function getTenantConfig(tenantId) {
   const { rows } = await pool.query(
     `select t.tenant_id, t.clinic_name, t.vertical, t.pms_type, t.pms_credentials,
+            t.vapi_assistant_id,
             c.config as onboarding_config
        from tenants t
        left join tenant_configs c on c.tenant_id = t.tenant_id
@@ -26,8 +27,17 @@ async function getTenantConfig(tenantId) {
     vertical: row.vertical,
     pmsType: row.pms_type,
     pmsCredentials: row.pms_credentials,
+    vapiAssistantId: row.vapi_assistant_id || null,
     config: row.onboarding_config || null,
   }
 }
 
-module.exports = { getTenantConfig }
+async function setVapiAssistantId(tenantId, assistantId) {
+  const { rowCount } = await pool.query(
+    `update tenants set vapi_assistant_id = $2 where tenant_id = $1`,
+    [tenantId, assistantId]
+  )
+  if (rowCount === 0) throw new Error(`Unknown tenant_id: ${tenantId}`)
+}
+
+module.exports = { getTenantConfig, setVapiAssistantId }
