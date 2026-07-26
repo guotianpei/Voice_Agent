@@ -35,4 +35,28 @@ function formatAppointmentTypes(types) {
   return 'Available appointment types: ' + list + '.'
 }
 
-module.exports = { formatAvailability, formatBookingConfirmation, formatContactLookup, formatAppointmentTypes }
+// Reschedule is the highest-risk hallucination surface in the product — the LLM is
+// holding an OLD date and a NEW date at once. Every date/time/name spoken here comes
+// directly from oldAppointment/newAppointment as returned by the adapter; nothing is
+// re-derived or guessed at in this function.
+function formatReschedule({ oldAppointment, newAppointment, status, staffMessage }) {
+  if (status === 'created_but_old_not_cancelled') {
+    return 'Your new appointment is booked for ' + newAppointment.date + ' at ' + newAppointment.time +
+      ' with ' + newAppointment.resourceName + ', confirmation number ' + newAppointment.confirmationNumber +
+      '. I ran into an issue cancelling your original appointment, so our staff will follow up to make sure ' +
+      'nothing is double-booked.'
+  }
+
+  const [oldDate, oldTime] = oldAppointment.start.split(' ')
+  return 'Done — I moved ' + oldAppointment.animalName + '\'s ' + oldAppointment.serviceName +
+    ' from ' + oldDate + ' at ' + oldTime + ' to ' + newAppointment.date + ' at ' + newAppointment.time +
+    ' with ' + newAppointment.resourceName + '. New confirmation number: ' + newAppointment.confirmationNumber + '.'
+}
+
+module.exports = {
+  formatAvailability,
+  formatBookingConfirmation,
+  formatContactLookup,
+  formatAppointmentTypes,
+  formatReschedule,
+}

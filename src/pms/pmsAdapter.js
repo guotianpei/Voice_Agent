@@ -44,6 +44,22 @@ class PMSAdapter {
   async cancelAppointment(appointmentId) {
     throw new Error('cancelAppointment not implemented')
   }
+
+  // async rescheduleAppointment(appointmentId: string, newSlot) -> RescheduleResult
+  //   newSlot: { date, time, appointmentTypeId?, resourceId? } — appointmentTypeId/resourceId
+  //     default to the old appointment's values when omitted (same service, same provider,
+  //     new time).
+  //   RescheduleResult: { oldAppointment, newAppointment, status }
+  //     oldAppointment: { id, animalName, serviceName, resourceName, start, end }
+  //     newAppointment: { id, confirmationNumber, date, time, serviceName, resourceName }
+  //     status: 'rescheduled' | 'created_but_old_not_cancelled'
+  //   A PMS with native appointment-update support should override this with a single
+  //   API call. A PMS without one (like the mock ezyVet adapter today) composes it from
+  //   bookAppointment + cancelAppointment — see EzyVetAdapter for the create-before-cancel
+  //   ordering that makes that composition safe.
+  async rescheduleAppointment(appointmentId, newSlot) {
+    throw new Error('rescheduleAppointment not implemented')
+  }
 }
 
 module.exports = PMSAdapter

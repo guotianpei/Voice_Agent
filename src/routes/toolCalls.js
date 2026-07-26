@@ -13,6 +13,7 @@ const {
   formatBookingConfirmation,
   formatContactLookup,
   formatAppointmentTypes,
+  formatReschedule,
 } = require('./responseFormatter')
 
 // Every route resolves its tenant from tenant_id (a Vapi static parameter —
@@ -119,6 +120,44 @@ router.post('/cancel-appointment', async (req, res) => {
   }
 })
 
+
+// RESCHEDULE APPOINTMENT
+// Disambiguation (which appointment the caller means) happens in the system
+// prompt using getAppointments' results before this is ever called — exactly
+// two upcoming appointments: ask which one; three or more: hand off to staff.
+// This route always takes one specific appointment_id, already resolved.
+router.post('/reschedule-appointment', async (req, res) => {
+  try {
+    const { appointment_id, time, appointment_type_id, resource_id } = req.body
+    if (!appointment_id) return res.status(400).json({ error: 'appointment_id is required' })
+
+    const date = resolveDate(req.body.date)
+    if (!date) {
+      return res.status(400).json({ error: `Could not understand date: "${req.body.date}"` })
+    }
+
+    // Same clinic-hours/booking-window gate as booking a fresh appointment —
+    // an appointment already existing shouldn't let a reschedule bypass the
+    // rule that a fresh booking would've been rejected under.
+    const verdict = validateRequestedDate(req.tenant.config, date)
+    if (!verdict.ok) {
+      return res.json({ result: verdict.message })
+    }
+
+    const adapter = adapterRegistry.get(req.tenant.pmsType, req.tenant.pmsCredentials)
+    const outcome = await adapter.rescheduleAppointment(appointment_id, {
+      date,
+      time,
+      appointmentTypeId: appointment_type_id,
+      resourceId: resource_id,
+    })
+
+    return res.json({ ...outcome, result: formatReschedule(outcome) })
+  } catch (err) {
+    console.error('rescheduleAppointment error:', err.message)
+    return res.status(500).json({ error: err.message || 'Could not reschedule appointment' })
+  }
+})
 
 router.post('/lookup-contact', async (req, res) => {
   const adapter = adapterRegistry.get(req.tenant.pmsType, req.tenant.pmsCredentials)
