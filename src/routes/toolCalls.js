@@ -39,7 +39,22 @@ router.post('/check-availability', async (req, res) => {
   // PMS returns raw availability; the clinic's staff config then filters it
   // down to voice-bookable providers on their configured days.
   const availability = filterSlotsByStaff(req.tenant.config, await adapter.checkAvailability(date))
-  res.json({ result: formatAvailability(availability) })
+
+  // `result` is what the assistant SPEAKS. `slots` is the same data in
+  // structured form — specifically so resource_id travels alongside each
+  // slot as a real field, not something the model has to reverse-engineer
+  // from a doctor's name in the spoken text. Fixes the gap flagged in
+  // buildAssistantPayload.js: bookAppointment needs resource_id, and until
+  // now the ONLY place it existed was inside the prose string.
+  res.json({
+    result: formatAvailability(availability),
+    slots: availability.slots.map((s) => ({
+      start: s.start,
+      end: s.end,
+      resource_id: s.resourceId,
+      resource_name: s.resourceName,
+    })),
+  })
 })
 
 router.post('/book-appointment', async (req, res) => {
